@@ -21,6 +21,7 @@
     "typescript": "^5.7.2"
   },
   "scripts": {
-  "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean && mkdir -p dist/admin && cp src/admin/*.css dist/admin/ || true"
+    "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean && mkdir -p dist/admin && cp src/admin/*.css dist/admin/ || true",
+    "prepare": "npm run build"
   }
 }
