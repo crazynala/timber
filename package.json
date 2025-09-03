@@ -6,7 +6,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "**/*.css"],
+  "files": ["dist", "src", "**/*.css"],
   "sideEffects": ["**/*.css"],
   "exports": {
     ".": {
@@ -23,8 +23,8 @@
     "@mantine/hooks": ">=8",
     "@tabler/icons-react": ">=3"
   },
-  "devDependencies": {
-    "tsup": "^8.3.0",
+  "dependencies": {
+    "tsup": "^8.5.0",
     "typescript": "^5.7.2"
   },
   "scripts": {
