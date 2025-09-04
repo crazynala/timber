@@ -1,5 +1,6 @@
 import { useBlocker, useNavigate } from "@remix-run/react";
-import { createContext, useContext, useState, useRef, useCallback, ReactNode, useMemo, useEffect } from "react";
+import { createContext, useContext, useState, useRef, useCallback, useMemo, useEffect } from "react";
+import type { ReactNode } from "react";
 
 export interface GlobalFormContextType {
   isDirty: boolean;
@@ -33,15 +34,13 @@ export function GlobalFormProvider({ children }: GlobalFormProviderProps) {
       const sanitizeSearch = (search: string) => search.replace(/[?&]/g, "").replace("index", "");
 
       const shouldBlock =
-        !bypassBlockerRef.current &&
-        isDirty &&
-        (currentLocation.pathname !== nextLocation.pathname || sanitizeSearch(currentLocation.search) !== sanitizeSearch(nextLocation.search));
+        !bypassBlockerRef.current && isDirty && (currentLocation.pathname !== nextLocation.pathname || sanitizeSearch(currentLocation.search) !== sanitizeSearch(nextLocation.search));
 
       if (shouldBlock) blockHandler();
 
       return shouldBlock;
     },
-    [isDirty, blockHandler],
+    [isDirty, blockHandler]
   );
 
   const blocker = useBlocker(blockerFunction);
@@ -56,7 +55,7 @@ export function GlobalFormProvider({ children }: GlobalFormProviderProps) {
         bypassBlockerRef.current = false;
       }, 1000);
     },
-    [navigate],
+    [navigate]
   );
 
   const registerHandlers = useCallback((save: () => void, cancel: () => void) => {
@@ -80,7 +79,7 @@ export function GlobalFormProvider({ children }: GlobalFormProviderProps) {
       registerBlockHandler,
       forceNavigate,
     }),
-    [isDirty, markDirty, registerHandlers, blocker, registerBlockHandler, forceNavigate],
+    [isDirty, markDirty, registerHandlers, blocker, registerBlockHandler, forceNavigate]
   );
 
   return <FormContext.Provider value={value}>{children}</FormContext.Provider>;

@@ -1,7 +1,8 @@
 import { useNavigate } from "@remix-run/react";
 import { ActionIcon, Group } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
-import React, { createContext, useState, useContext, useCallback, useMemo, ReactNode } from "react";
+import React, { createContext, useState, useContext, useCallback, useMemo } from "react";
+import type { ReactNode } from "react";
 
 interface RecordBrowserContextType<T = any> {
   records: T[];

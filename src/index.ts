@@ -6,5 +6,7 @@ export * from "./admin/paginationManager";
 export * from "./admin/masterTableProvider";
 export * from "./admin/recordBrowserProvider";
 export * from "./admin/autoQueryProvider";
+export * from "./admin/titledCard";
 export { default as BreadcrumbSet } from "./admin/breadcrumbSet";
 export { DebugModeToggle } from "./debug/DebugModeToggle";
+export * from "./admin/keyboardShortcuts";

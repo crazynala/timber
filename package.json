@@ -6,11 +6,17 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "src", "**/*.css"],
-  "sideEffects": ["**/*.css"],
+  "files": [
+    "dist",
+    "src",
+    "**/*.css"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "exports": {
     ".": {
-  "types": "./dist/index.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
@@ -28,7 +34,7 @@
     "typescript": "^5.7.2"
   },
   "scripts": {
-    "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean && mkdir -p dist/admin && cp src/admin/*.css dist/admin/ || true",
+    "build": "tsup src/index.ts --tsconfig tsconfig.json --dts --format esm,cjs --sourcemap --clean && mkdir -p dist/admin && cp src/admin/*.css dist/admin/ || true",
     "prepare": "npm run build"
   }
 }
