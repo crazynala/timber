@@ -36,5 +36,15 @@
   "scripts": {
     "build": "tsup src/index.ts --tsconfig tsconfig.json --dts --format esm,cjs --sourcemap --clean && mkdir -p dist/admin && cp src/admin/*.css dist/admin/ || true",
     "prepare": "npm run build"
+  },
+  "tsup": {
+    "external": [
+      "react",
+      "react-dom",
+      "@remix-run/react",
+      "@mantine/core",
+      "@mantine/hooks",
+      "@tabler/icons-react"
+    ]
   }
 }

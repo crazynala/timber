@@ -5,7 +5,7 @@ import { Button, Group, Text, Paper } from "@mantine/core";
 import { IconAlertSquareRounded } from "@tabler/icons-react";
 import classes from "./saveCancelHeader.module.css";
 
-export function SaveCancelHeader() {
+export function SaveCancelHeader({ children }: { children?: React.ReactNode }) {
   const { isDirty, saveHandlerRef, cancelHandlerRef, registerBlockHandler } = useGlobalFormContext();
   const [pulse, setPulse] = useState(false);
 
@@ -19,10 +19,10 @@ export function SaveCancelHeader() {
   }, []);
 
   useEffect(() => registerBlockHandler(blockHandler), [blockHandler]);
-  if (!isDirty) return null;
+  if (!isDirty) return children;
 
   return (
-    <Paper className={pulse ? classes["shake-and-pulse"] : undefined} w="100%" radius="lg" p={3} bg="gray.9" bd="gray.6" c="white">
+    <Paper flex={1} className={pulse ? classes["shake-and-pulse"] : undefined} radius="lg" p={3} bg="gray.9" bd="gray.6" c="white">
       <Group justify="space-between">
         <Group ml="sm">
           <IconAlertSquareRounded />
