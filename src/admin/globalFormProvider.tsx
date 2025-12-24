@@ -1,5 +1,6 @@
 import { useBlocker, useNavigate } from "@remix-run/react";
 import { createContext, useContext, useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { useForm, useFormState } from "react-hook-form";
 import type { ReactNode } from "react";
 
 export interface GlobalFormContextType {
@@ -14,6 +15,8 @@ export interface GlobalFormContextType {
   registerNavigate: (fn: (to: string) => void) => void;
   makeBlockerFunction: () => ({ currentLocation, nextLocation }: any) => boolean;
   forceNavigate: (to: string) => void;
+  formInstanceId: string | null;
+  registerFormInstanceId: (id: string | null) => void;
 }
 
 const FormContext = createContext<GlobalFormContextType | null>(null);
@@ -25,6 +28,7 @@ interface GlobalFormProviderProps {
 export function GlobalFormProvider({ children }: GlobalFormProviderProps) {
   const [isDirty, setIsDirty] = useState(false);
   const [blockHandler, setBlockHandler] = useState<() => void>(() => () => {});
+  const [formInstanceId, setFormInstanceId] = useState<string | null>(null);
   const bypassBlockerRef = useRef(false);
   const navigateRef = useRef<null | ((to: string) => void)>(null);
 
@@ -65,6 +69,10 @@ export function GlobalFormProvider({ children }: GlobalFormProviderProps) {
     setBlockHandler(() => block);
   }, []);
 
+  const registerFormInstanceId = useCallback((id: string | null) => {
+    setFormInstanceId(id || null);
+  }, []);
+
   const registerNavigate = useCallback((fn: (to: string) => void) => {
     navigateRef.current = fn;
   }, []);
@@ -81,8 +89,10 @@ export function GlobalFormProvider({ children }: GlobalFormProviderProps) {
       registerNavigate,
       makeBlockerFunction: () => blockerFunction,
       forceNavigate,
+      formInstanceId,
+      registerFormInstanceId,
     }),
-    [isDirty, markDirty, registerHandlers, registerBlockHandler, forceNavigate, blockerFunction]
+    [isDirty, markDirty, registerHandlers, registerBlockHandler, forceNavigate, blockerFunction, formInstanceId, registerFormInstanceId]
   );
 
   return <FormContext.Provider value={value}>{children}</FormContext.Provider>;
@@ -98,12 +108,30 @@ interface FormHandlers<T> {
   handleSubmit: (onSubmit: (data: T) => void) => () => void;
   reset: () => void;
   formState: { isDirty: boolean };
+  control?: any;
 }
 
-export function useInitGlobalFormContext<T>(formHandlers: FormHandlers<T>, onSubmit: (data: T) => void, onCancel: () => void) {
-  const { registerHandlers, markDirty, registerNavigate, makeBlockerFunction, forceNavigate } = useGlobalFormContext();
+export function useInitGlobalFormContext<T>(
+  formHandlers: FormHandlers<T>,
+  onSubmit: (data: T) => void,
+  onCancel: () => void,
+  options?: { formInstanceId?: string | null }
+) {
+  const {
+    registerHandlers,
+    markDirty,
+    registerNavigate,
+    makeBlockerFunction,
+    forceNavigate,
+    registerFormInstanceId,
+  } = useGlobalFormContext();
   const navigate = useNavigate();
   const blocker = useBlocker(makeBlockerFunction());
+  const fallbackForm = useForm({ defaultValues: {} });
+  const effectiveControl = formHandlers.control || fallbackForm.control;
+  const formState = useFormState({ control: effectiveControl });
+  const passedInstanceId = options?.formInstanceId || null;
+  const shouldBind = !!formHandlers.control;
   useEffect(() => {
     const cancelHandler =
       !onCancel || (onCancel as any) === "undefined"
@@ -111,16 +139,27 @@ export function useInitGlobalFormContext<T>(formHandlers: FormHandlers<T>, onSub
             formHandlers.reset();
           }
         : onCancel;
+    if (!shouldBind) return;
     registerHandlers(formHandlers.handleSubmit(onSubmit), cancelHandler);
-  }, [formHandlers, onSubmit, onCancel, registerHandlers]);
+  }, [formHandlers, onSubmit, onCancel, registerHandlers, shouldBind]);
 
   useEffect(() => {
-    markDirty(formHandlers.formState.isDirty);
-  }, [formHandlers.formState.isDirty, markDirty]);
+    if (!shouldBind) return;
+    const dirty = formHandlers.control
+      ? formState.isDirty
+      : formHandlers.formState.isDirty;
+    markDirty(dirty);
+  }, [formHandlers.control, formHandlers.formState.isDirty, formState.isDirty, markDirty, shouldBind]);
 
   useEffect(() => {
     registerNavigate((to: string) => navigate(to));
   }, [navigate, registerNavigate]);
+
+  useEffect(() => {
+    if (!shouldBind) return;
+    registerFormInstanceId(passedInstanceId);
+    return () => registerFormInstanceId(null);
+  }, [passedInstanceId, registerFormInstanceId, shouldBind]);
 
   return { blocker, forceNavigate };
 }

@@ -27,7 +27,8 @@
     "@remix-run/react": ">=2",
     "@mantine/core": ">=8",
     "@mantine/hooks": ">=8",
-    "@tabler/icons-react": ">=3"
+    "@tabler/icons-react": ">=3",
+    "react-hook-form": ">=7"
   },
   "dependencies": {
     "tsup": "^8.5.0",
@@ -44,7 +45,8 @@
       "@remix-run/react",
       "@mantine/core",
       "@mantine/hooks",
-      "@tabler/icons-react"
+      "@tabler/icons-react",
+      "react-hook-form"
     ]
   }
 }
