@@ -131,7 +131,7 @@ export function useInitGlobalFormContext<T>(
   const effectiveControl = formHandlers.control || fallbackForm.control;
   const formState = useFormState({ control: effectiveControl });
   const passedInstanceId = options?.formInstanceId || null;
-  const shouldBind = !!formHandlers.control;
+  const shouldBind = true;
   useEffect(() => {
     const cancelHandler =
       !onCancel || (onCancel as any) === "undefined"
